@@ -131,6 +131,9 @@ ol.View.prototype.applyOptions_ = function(options) {
   properties[ol.ViewProperty.CENTER] = options.center !== undefined ?
     options.center : null;
 
+  // FIXME: enable combination of restrictExtent and enableRotation
+  options.restrictExtent = options.restrictExtent && !options.enableRotation;
+
   var resolutionConstraintInfo = ol.View.createResolutionConstraint_(
       options);
 
@@ -178,6 +181,12 @@ ol.View.prototype.applyOptions_ = function(options) {
     rotation: rotationConstraint
   };
 
+  /**
+   * @private
+   * @type {olx.ViewOptions}
+   */
+  this.options_ = options;
+
   if (options.resolution !== undefined) {
     properties[ol.ViewProperty.RESOLUTION] = options.resolution;
   } else if (options.zoom !== undefined) {
@@ -187,12 +196,6 @@ ol.View.prototype.applyOptions_ = function(options) {
   properties[ol.ViewProperty.ROTATION] =
       options.rotation !== undefined ? options.rotation : 0;
   this.setProperties(properties);
-
-  /**
-   * @private
-   * @type {olx.ViewOptions}
-   */
-  this.options_ = options;
 
 };
 
@@ -510,7 +513,11 @@ ol.View.prototype.constrainResolution = function(
     resolution, opt_delta, opt_direction) {
   var delta = opt_delta || 0;
   var direction = opt_direction || 0;
-  return this.constraints_.resolution(resolution, delta, direction);
+  if (this.options_.restrictExtent) {
+    return this.constraints_.resolution(resolution, delta, direction, this.getSizeFromViewport());
+  } else {
+    return this.constraints_.resolution(resolution, delta, direction, undefined);
+  }
 };
 
 
@@ -1054,7 +1061,6 @@ ol.View.prototype.setZoom = function(zoom) {
  */
 ol.View.createCenterConstraint_ = function(options, view) {
   if (options.extent !== undefined) {
-    options.restrictExtent = (!options.enableRotation && options.restrictExtent === true);
     return ol.CenterConstraint.createExtent(options.extent, options.restrictExtent ? view : undefined);
   } else {
     return ol.CenterConstraint.none;
@@ -1137,7 +1143,7 @@ ol.View.createResolutionConstraint_ = function(options) {
     minResolution = maxResolution / Math.pow(zoomFactor, maxZoom - minZoom);
 
     resolutionConstraint = ol.ResolutionConstraint.createSnapToPower(
-        zoomFactor, maxResolution, maxZoom - minZoom);
+        zoomFactor, maxResolution, maxZoom - minZoom, options.restrictExtent ? options.extent : undefined);
   }
   return {constraint: resolutionConstraint, maxResolution: maxResolution,
     minResolution: minResolution, minZoom: minZoom, zoomFactor: zoomFactor};

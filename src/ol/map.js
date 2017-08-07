@@ -1081,6 +1081,7 @@ ol.Map.prototype.handleViewChanged_ = function() {
     this.viewChangeListenerKey_ = ol.events.listen(
         view, ol.events.EventType.CHANGE,
         this.handleViewPropertyChanged_, this);
+    this.updateSize();
   }
   this.render();
 };
@@ -1361,6 +1362,11 @@ ol.Map.prototype.updateSize = function() {
           parseFloat(computedStyle['paddingBottom']) -
           parseFloat(computedStyle['borderBottomWidth'])
     ]);
+    let view = this.get(ol.MapProperty.VIEW);
+    if (view) {
+      view.setCenter(view.constrainCenter(view.getCenter()));
+      view.setResolution(view.constrainResolution(view.getResolution()));
+    }
   }
 };
 

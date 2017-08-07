@@ -2,6 +2,7 @@ goog.provide('ol.ResolutionConstraint');
 
 goog.require('ol.array');
 goog.require('ol.math');
+goog.require('ol.extent');
 
 
 /**
@@ -14,9 +15,10 @@ ol.ResolutionConstraint.createSnapToResolutions = function(resolutions) {
      * @param {number|undefined} resolution Resolution.
      * @param {number} delta Delta.
      * @param {number} direction Direction.
+     * @param {ol.Size|undefined} opt_size Size of the viewport.
      * @return {number|undefined} Resolution.
      */
-    function(resolution, delta, direction) {
+    function(resolution, delta, direction, opt_size) {
       if (resolution !== undefined) {
         var z =
               ol.array.linearFindNearest(resolutions, resolution, direction);
@@ -38,25 +40,33 @@ ol.ResolutionConstraint.createSnapToResolutions = function(resolutions) {
 /**
  * @param {number} power Power.
  * @param {number} maxResolution Maximum resolution.
- * @param {number=} opt_maxLevel Maximum level.
+ * @param {number} maxLevel Maximum level.
+ * @param {ol.Extent|undefined} opt_extent Extent.
  * @return {ol.ResolutionConstraintType} Zoom function.
  */
-ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, opt_maxLevel) {
+ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, maxLevel, opt_extent) {
   return (
     /**
      * @param {number|undefined} resolution Resolution.
      * @param {number} delta Delta.
      * @param {number} direction Direction.
+     * @param {ol.Size|undefined} opt_size Size of the viewport.
      * @return {number|undefined} Resolution.
      */
-    function(resolution, delta, direction) {
+    function(resolution, delta, direction, opt_size) {
       if (resolution !== undefined) {
+        // Override maxResolution if extent and size were given.
+        if (opt_extent !== undefined && opt_size !== undefined) {
+          var extentW = ol.extent.getWidth(opt_extent);
+          var extentH = ol.extent.getHeight(opt_extent);
+          maxResolution = Math.min(extentW / opt_size[0], extentH / opt_size[1]);
+        }
         var offset = -direction / 2 + 0.5;
         var oldLevel = Math.floor(
             Math.log(maxResolution / resolution) / Math.log(power) + offset);
         var newLevel = Math.max(oldLevel + delta, 0);
-        if (opt_maxLevel !== undefined) {
-          newLevel = Math.min(newLevel, opt_maxLevel);
+        if (maxLevel !== undefined) {
+          newLevel = Math.min(newLevel, maxLevel);
         }
         return maxResolution / Math.pow(power, newLevel);
       } else {
