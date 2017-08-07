@@ -199,6 +199,7 @@ ol.View.prototype.applyOptions_ = function(options) {
 
 };
 
+
 /**
  * Get an updated version of the view options used to construct the view.  The
  * current resolution (or zoom), center, and rotation are applied to any stored
@@ -352,6 +353,7 @@ ol.View.prototype.cancelAnimations = function() {
   this.animations_.length = 0;
 };
 
+
 /**
  * Update all animations.
  */
@@ -431,6 +433,7 @@ ol.View.prototype.updateAnimations_ = function() {
     this.updateAnimationKey_ = requestAnimationFrame(this.updateAnimations_);
   }
 };
+
 
 /**
  * @param {number} rotation Target rotation.
