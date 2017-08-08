@@ -40,17 +40,17 @@ ol.ResolutionConstraint.createSnapToResolutions = function(resolutions) {
 /**
  * @param {number} power Power.
  * @param {number} maxResolution Maximum resolution.
- * @param {number} maxLevel Maximum level.
+ * @param {number|undefined} opt_maxLevel Maximum level.
  * @param {ol.Extent|undefined} opt_extent Extent.
  * @return {ol.ResolutionConstraintType} Zoom function.
  */
-ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, maxLevel, opt_extent) {
+ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, opt_maxLevel, opt_extent) {
   return (
     /**
      * @param {number|undefined} resolution Resolution.
      * @param {number} delta Delta.
      * @param {number} direction Direction.
-     * @param {ol.Size|undefined} opt_size Size of the viewport.
+     * @param {ol.Size|undefined} opt_size Viewport size to fit opt_extent into.
      * @return {number|undefined} Resolution.
      */
     function(resolution, delta, direction, opt_size) {
@@ -65,8 +65,8 @@ ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, maxLe
         var oldLevel = Math.floor(
             Math.log(maxResolution / resolution) / Math.log(power) + offset);
         var newLevel = Math.max(oldLevel + delta, 0);
-        if (maxLevel !== undefined) {
-          newLevel = Math.min(newLevel, maxLevel);
+        if (opt_maxLevel !== undefined) {
+          newLevel = Math.min(newLevel, opt_maxLevel);
         }
         return maxResolution / Math.pow(power, newLevel);
       } else {

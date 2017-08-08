@@ -167,7 +167,7 @@ ol.View.prototype.applyOptions_ = function(options) {
    */
   this.minZoom_ = resolutionConstraintInfo.minZoom;
 
-  var centerConstraint = ol.View.createCenterConstraint_(options, this);
+  var centerConstraint = ol.View.createCenterConstraint_(options);
   var resolutionConstraint = resolutionConstraintInfo.constraint;
   var rotationConstraint = ol.View.createRotationConstraint_(options);
 
@@ -496,11 +496,17 @@ ol.View.prototype.getSizeFromViewport = function() {
 /**
  * Get the constrained center of this view.
  * @param {ol.Coordinate|undefined} center Center.
+ * @param {ol.Size=} opt_size Size of the viewport.
  * @return {ol.Coordinate|undefined} Constrained center.
  * @api
  */
-ol.View.prototype.constrainCenter = function(center) {
-  return this.constraints_.center(center);
+ol.View.prototype.constrainCenter = function(center, opt_size) {
+  var size = opt_size ? opt_size : this.getSizeFromViewport();
+  if (this.options_.restrictExtent) {
+    return this.constraints_.center(center, size, this.getResolution());
+  } else {
+    return this.constraints_.center(center);
+  }
 };
 
 
@@ -509,15 +515,17 @@ ol.View.prototype.constrainCenter = function(center) {
  * @param {number|undefined} resolution Resolution.
  * @param {number=} opt_delta Delta. Default is `0`.
  * @param {number=} opt_direction Direction. Default is `0`.
+ * @param {ol.Size=} opt_size Size of the viewport. Default is `[100, 100]`
  * @return {number|undefined} Constrained resolution.
  * @api
  */
 ol.View.prototype.constrainResolution = function(
-    resolution, opt_delta, opt_direction) {
+    resolution, opt_delta, opt_direction, opt_size) {
   var delta = opt_delta || 0;
   var direction = opt_direction || 0;
+  var size = opt_size || this.getSizeFromViewport();
   if (this.options_.restrictExtent) {
-    return this.constraints_.resolution(resolution, delta, direction, this.getSizeFromViewport());
+    return this.constraints_.resolution(resolution, delta, direction, size);
   } else {
     return this.constraints_.resolution(resolution, delta, direction, undefined);
   }
@@ -1058,13 +1066,12 @@ ol.View.prototype.setZoom = function(zoom) {
 
 /**
  * @param {olx.ViewOptions} options View options.
- * @param {ol.View} view View to restrict to, if restrictExtent is enabled.
  * @private
  * @return {ol.CenterConstraintType} The constraint.
  */
-ol.View.createCenterConstraint_ = function(options, view) {
+ol.View.createCenterConstraint_ = function(options) {
   if (options.extent !== undefined) {
-    return ol.CenterConstraint.createExtent(options.extent, options.restrictExtent ? view : undefined);
+    return ol.CenterConstraint.createExtent(options.extent);
   } else {
     return ol.CenterConstraint.none;
   }

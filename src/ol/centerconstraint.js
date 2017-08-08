@@ -6,34 +6,29 @@ goog.require('ol.math');
 
 /**
  * @param {ol.Extent} extent Extent.
- * @param {ol.View|undefined} view Restrict to viewport of this view, if given.
  * @return {ol.CenterConstraintType} The constraint.
  */
-ol.CenterConstraint.createExtent = function(extent, view) {
+ol.CenterConstraint.createExtent = function(extent) {
   // Extent doesn't change, so we can store the size and center.
-  var extentSize = [
-    extent[2] - extent[0],
-    extent[3] - extent[1]
-  ];
+  var extentSize = ol.extent.getSize(extent);
   var extentCenter = ol.extent.getCenter(extent);
   return (
     /**
      * @param {ol.Coordinate|undefined} center Center.
+     * @param {ol.Size=} opt_size Viewport size.
+     * @param {number=} opt_resolution Viewport size.
      * @return {ol.Coordinate|undefined} Center.
      */
-    function(center) {
+    function(center, opt_size, opt_resolution) {
       if (center) {
         var extent_ = extent;
         // TODO: Handle rotated views?
-        // Restrict the extent further if a view was given.
-        if (view) {
-          // TODO: Improve performance and readability by tracking viewport (and resolution) changes.
-          var viewportSize = view.getSizeFromViewport();
-          var viewResolution = view.getResolution();
+        // Restrict the extent further if size & resolution were given.
+        if (opt_size && opt_resolution) {
           // Deltas can not be negative or we will create an invalid extent.
           // Clamp to the center when the restrictExtent has smaller display than the Viewport.
-          var deltaX = Math.max((extentSize[0] - (viewportSize[0] * viewResolution)) / 2, 0);
-          var deltaY = Math.max((extentSize[1] - (viewportSize[1] * viewResolution)) / 2, 0);
+          var deltaX = Math.max((extentSize[0] - (opt_size[0] * opt_resolution)) / 2, 0);
+          var deltaY = Math.max((extentSize[1] - (opt_size[1] * opt_resolution)) / 2, 0);
           extent_ = [
             extentCenter[0] - deltaX,
             extentCenter[1] - deltaY,

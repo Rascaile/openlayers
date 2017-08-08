@@ -97,7 +97,7 @@ ol.CanvasTextState;
 
 
 /**
- * @typedef {function((ol.Coordinate|undefined)): (ol.Coordinate|undefined)}
+ * @typedef {function((ol.Coordinate|undefined), ol.Size=, number=): (ol.Coordinate|undefined)}
  */
 ol.CenterConstraintType;
 

@@ -750,7 +750,7 @@ olx.ViewOptions.prototype.extent;
 
 /**
  * Force the extent to fit the edges of the Viewport instead of the center point.
- * Has no effect if enableRotation is set to `true`. Default `false`.
+ * Has no effect if enableRotation is set to `true`. Default is `false`.
  * @type {boolean|undefined}
  * @api
  */
