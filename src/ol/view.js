@@ -1152,8 +1152,13 @@ ol.View.createResolutionConstraint_ = function(options) {
         Math.log(maxResolution / minResolution) / Math.log(zoomFactor));
     minResolution = maxResolution / Math.pow(zoomFactor, maxZoom - minZoom);
 
-    resolutionConstraint = ol.ResolutionConstraint.createSnapToPower(
-        zoomFactor, maxResolution, maxZoom - minZoom, options.restrictExtent ? options.extent : undefined);
+    if (options.restrictExtent) {
+      resolutionConstraint = ol.ResolutionConstraint.createSnapToPower(
+          zoomFactor, maxResolution, maxZoom - minZoom, options.extent);
+    } else {
+      resolutionConstraint = ol.ResolutionConstraint.createSnapToPower(
+          zoomFactor, maxResolution, maxZoom - minZoom);
+    }
   }
   return {constraint: resolutionConstraint, maxResolution: maxResolution,
     minResolution: minResolution, minZoom: minZoom, zoomFactor: zoomFactor};
