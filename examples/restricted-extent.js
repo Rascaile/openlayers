@@ -21,8 +21,8 @@ var maxExtent = [-546677.6272683458, 5244890.488572459,
  */
 var view = new ol.View({
   center: ol.extent.getCenter(maxExtent),
-  minZoom: 6,
-  zoom: 6,
+  zoom: 10,
+  extent: maxExtent,
   restrictExtent: true
 });
 
@@ -37,7 +37,6 @@ map = new ol.Map({
       collapsible: false
     })
   }),
-  renderer: common.getRendererFromQueryString(),
   target: 'map',
   view: view
 });
