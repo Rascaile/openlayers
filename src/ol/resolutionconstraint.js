@@ -15,7 +15,7 @@ ol.ResolutionConstraint.createSnapToResolutions = function(resolutions) {
      * @param {number|undefined} resolution Resolution.
      * @param {number} delta Delta.
      * @param {number} direction Direction.
-     * @param {ol.Size|undefined} opt_size Size of the viewport.
+     * @param {ol.Size=} opt_size Size of the viewport.
      * @return {number|undefined} Resolution.
      */
     function(resolution, delta, direction, opt_size) {
@@ -40,8 +40,8 @@ ol.ResolutionConstraint.createSnapToResolutions = function(resolutions) {
 /**
  * @param {number} power Power.
  * @param {number} maxResolution Maximum resolution.
- * @param {number|undefined} opt_maxLevel Maximum level.
- * @param {ol.Extent|undefined} opt_extent Extent.
+ * @param {number=} opt_maxLevel Maximum level.
+ * @param {ol.Extent=} opt_extent Extent.
  * @return {ol.ResolutionConstraintType} Zoom function.
  */
 ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, opt_maxLevel, opt_extent) {
@@ -50,13 +50,13 @@ ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, opt_m
      * @param {number|undefined} resolution Resolution.
      * @param {number} delta Delta.
      * @param {number} direction Direction.
-     * @param {ol.Size|undefined} opt_size Viewport size to fit opt_extent into.
+     * @param {ol.Size=} opt_size Viewport size to fit opt_extent into.
      * @return {number|undefined} Resolution.
      */
     function(resolution, delta, direction, opt_size) {
       if (resolution !== undefined) {
         // Override maxResolution if extent and size were given.
-        if (opt_extent !== undefined && opt_size !== undefined) {
+        if (opt_extent && opt_size) {
           var extentW = ol.extent.getWidth(opt_extent);
           var extentH = ol.extent.getHeight(opt_extent);
           maxResolution = Math.min(extentW / opt_size[0], extentH / opt_size[1]);

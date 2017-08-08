@@ -501,7 +501,7 @@ ol.View.prototype.getSizeFromViewport_ = function() {
  * @api
  */
 ol.View.prototype.constrainCenter = function(center, opt_size) {
-  var size = opt_size ? opt_size : this.getSizeFromViewport_();
+  var size = opt_size || this.getSizeFromViewport_();
   if (this.options_.restrictExtent) {
     return this.constraints_.center(center, size, this.getResolution());
   } else {
@@ -527,7 +527,7 @@ ol.View.prototype.constrainResolution = function(
   if (this.options_.restrictExtent) {
     return this.constraints_.resolution(resolution, delta, direction, size);
   } else {
-    return this.constraints_.resolution(resolution, delta, direction, undefined);
+    return this.constraints_.resolution(resolution, delta, direction);
   }
 };
 

@@ -495,7 +495,7 @@ ol.ReprojTriangle;
 
 
 /**
- * @typedef {function((number|undefined), number, number, (ol.Size|undefined)): (number|undefined)}
+ * @typedef {function((number|undefined), number, number, ol.Size=): (number|undefined)}
  */
 ol.ResolutionConstraintType;
 
