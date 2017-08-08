@@ -477,10 +477,10 @@ ol.View.prototype.calculateCenterZoom = function(resolution, anchor) {
 
 
 /**
+ * @private
  * @return {ol.Size} Viewport size or `[100, 100]` when no viewport is found.
- * @api
  */
-ol.View.prototype.getSizeFromViewport = function() {
+ol.View.prototype.getSizeFromViewport_ = function() {
   var size = [100, 100];
   var selector = '.ol-viewport[data-view="' + ol.getUid(this) + '"]';
   var element = document.querySelector(selector);
@@ -501,7 +501,7 @@ ol.View.prototype.getSizeFromViewport = function() {
  * @api
  */
 ol.View.prototype.constrainCenter = function(center, opt_size) {
-  var size = opt_size ? opt_size : this.getSizeFromViewport();
+  var size = opt_size ? opt_size : this.getSizeFromViewport_();
   if (this.options_.restrictExtent) {
     return this.constraints_.center(center, size, this.getResolution());
   } else {
@@ -515,7 +515,7 @@ ol.View.prototype.constrainCenter = function(center, opt_size) {
  * @param {number|undefined} resolution Resolution.
  * @param {number=} opt_delta Delta. Default is `0`.
  * @param {number=} opt_direction Direction. Default is `0`.
- * @param {ol.Size=} opt_size Size of the viewport. Default is `[100, 100]`
+ * @param {ol.Size=} opt_size Size of the viewport.
  * @return {number|undefined} Constrained resolution.
  * @api
  */
@@ -523,7 +523,7 @@ ol.View.prototype.constrainResolution = function(
     resolution, opt_delta, opt_direction, opt_size) {
   var delta = opt_delta || 0;
   var direction = opt_direction || 0;
-  var size = opt_size || this.getSizeFromViewport();
+  var size = opt_size || this.getSizeFromViewport_();
   if (this.options_.restrictExtent) {
     return this.constraints_.resolution(resolution, delta, direction, size);
   } else {
@@ -591,7 +591,7 @@ ol.View.prototype.getHints = function(opt_hints) {
  * @api
  */
 ol.View.prototype.calculateExtent = function(opt_size) {
-  var size = opt_size || this.getSizeFromViewport();
+  var size = opt_size || this.getSizeFromViewport_();
   var center = /** @type {!ol.Coordinate} */ (this.getCenter());
   ol.asserts.assert(center, 1); // The view center is not defined
   var resolution = /** @type {!number} */ (this.getResolution());
@@ -705,7 +705,7 @@ ol.View.prototype.getResolutions = function() {
  * @api
  */
 ol.View.prototype.getResolutionForExtent = function(extent, opt_size) {
-  var size = opt_size || this.getSizeFromViewport();
+  var size = opt_size || this.getSizeFromViewport_();
   var xResolution = ol.extent.getWidth(extent) / size[0];
   var yResolution = ol.extent.getHeight(extent) / size[1];
   return Math.max(xResolution, yResolution);
@@ -858,7 +858,7 @@ ol.View.prototype.fit = function(geometryOrExtent, opt_options) {
   var options = opt_options || {};
   var size = options.size;
   if (!size) {
-    size = this.getSizeFromViewport();
+    size = this.getSizeFromViewport_();
   }
   /** @type {ol.geom.SimpleGeometry} */
   var geometry;
